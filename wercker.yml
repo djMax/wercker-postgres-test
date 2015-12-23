@@ -16,8 +16,8 @@ build:
           export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
           export PGUSER=docker
           export PGPASSWORD=docker
-          createdb pgtest
-          psql -d pgtest -f ./schema.sql
+          # createdb pgtest
+          psql -v -d pgtest -f ./schema.sql
 
     # A step that executes `npm install` command
     - npm-install
