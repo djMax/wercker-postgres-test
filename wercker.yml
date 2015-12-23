@@ -2,33 +2,30 @@ box: node
 # You can also use services such as databases. Read more on our dev center:
 # http://devcenter.wercker.com/docs/services/index.html
 services:
-  - id: mies/postgis
+  - id: helmi03/docker-postgis
 
 build:
   steps:
-    - wercker/print-dir-tree:
-      directory: /usr/share/postgresql/
-
-    - wercker/print-dir-tree:
-      directory: /usr/lib/postgresql/
-
-    - wercker/print-dir-tree:
-      directory: /usr/linclude/postgresql/
-    - script:
-      name: let db wake up
-      code: sleep 15
+    - install-packages:
+      packages: postgresql-9.4-postgis-scripts
 
     - script:
-      name: create table
-      code: |-
-          echo "$(pg_config --sharedir)/contrib/"
-          createdb mydb
-          createdb -E UTF8 template_postgis
-          psql -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
-          psql -d template_postgis -f $POSTGIS_SQL_PATH/postgis.sql
-          psql -d template_postgis -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql
-          psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-          psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
-          psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
-          #PGPASSWORD=wercker psql -h "$WERCKER_POSTGRESQL_HOST" -U postgres -d werckerdb1 -c 'SELECT PostGIS_full_version();'
-          #PGPASSWORD=wercker psql -h "$WERCKER_POSTGRESQL_HOST" -U postgres -d werckerdb1 -c 'CREATE TABLE ROADS_GEOM ( ID int4, NAME varchar(25) );SELECT AddGeometryColumn('', 'roads', 'roads_geom', -1, 'GEOMETRY', 3 );'
+        name: createdb
+        code: |-
+          export PGPORT=$DOCKER_POSTGIS_PORT_5432_TCP_PORT
+          export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
+          export PGUSER=docker
+          export PGPASSWORD=docker
+          createdb pgtest
+          psql -d pgtest -f ./schema.sql
+
+    # A step that executes `npm install` command
+    - npm-install
+
+    # A custom script step, name value is used in the UI
+    # and the code value contains the command that get executed
+    - script:
+        name: echo nodejs information
+        code: |
+          echo "node version $(node -v) running"
+          echo "npm version $(npm -v) running"
