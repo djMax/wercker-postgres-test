@@ -1,0 +1,23 @@
+box: node
+
+services:
+  - id: helmi03/docker-postgis
+
+build:
+  # The steps that will be executed on build
+  # Steps make up the actions in your pipeline
+  # Read more about steps on our dev center:
+  # http://devcenter.wercker.com/docs/steps/index.html
+  steps:
+    - install-packages:
+      packages: postgresql-9.4-postgis-scripts
+
+    - script:
+        name: createdb
+        code: |-
+          export PGPORT=$DOCKER_POSTGIS_PORT_5432_TCP_PORT
+          export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
+          export PGUSER=docker
+          export PGPASSWORD=docker
+          createdb pgtest
+          psql -d pgtest -f ./schema.sql
