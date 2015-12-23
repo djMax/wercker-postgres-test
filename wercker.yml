@@ -9,6 +9,16 @@ build:
     - install-packages:
       packages: postgresql-9.4-postgis-scripts
 
+    - script:
+        name: createdb
+        code: |-
+          export PGPORT=$DOCKER_POSTGIS_PORT_5432_TCP_PORT
+          export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
+          export PGUSER=docker
+          export PGPASSWORD=docker
+          createdb pgtest
+          psql -d pgtest -f ./schema.sql
+
     # A step that executes `npm install` command
     - npm-install
 
