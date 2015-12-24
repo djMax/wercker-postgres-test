@@ -3,7 +3,7 @@ box: node
 # http://devcenter.wercker.com/docs/services/index.html
 services:
   - id: helmi03/docker-postgis
-    cmd: su postgres sh -c "/usr/lib/postgresql/9.3/bin/createdb pgtest"
+    cmd: su postgres sh -c "sleep 5 && /usr/lib/postgresql/9.3/bin/createdb pgtest"
     
 build:
   steps:
