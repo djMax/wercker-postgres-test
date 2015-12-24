@@ -6,23 +6,65 @@ services:
   
 build:
   steps:
+build:
+  steps:
+    # Downgrade Rubygems (see https://github.com/wercker/support/issues/161#issuecomment-155731186)
+    - script:
+      name: downgrade GemFile
+      code: gem update --system 2.4.8
+
+    # A step that executes `bundle install` command
+    # All the options of Bundler can be set only via environment variables.
+    # You have to edit the project on wercker.com and set the variables.
+    # To see the list of possible options:
+    # https://github.com/wercker/step-bundle-install/blob/master/run.sh
+    - bundle-install
+
+    # A step that installs the required packages
     - install-packages:
       packages: postgresql-9.4-postgis-scripts
 
     - script:
-        name: createdb
-        code: |-
-          export PGPORT=$DOCKER_POSTGIS_PORT_5432_TCP_PORT
-          export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
-          export PGUSER=docker
-          export PGPASSWORD=docker
-          psql -d pgtest -f ./schema.sql
+      name: create postgres env vars
+      code: |
+        export POSTGRES_PORT_5432_TCP_ADDR=$POSTGIS_PORT_5432_TCP_ADDR
+        export POSTGRES_PORT_5432_TCP_PORT=$POSTGIS_PORT_5432_TCP_PORT
+        export POSTGRES_ENV_POSTGRES_USER=docker
+        export POSTGRES_ENV_POSTGRES_PASSWORD=postgis
+        export WERCKER_POSTGRESQL_ADAPTER=postgis
 
-    # A step that executes `npm install` command
+    - script:
+      name: Debug
+      code: |
+        ls -al /usr/share/postgresql/9.4/extension/postgis.control
+        cat /usr/share/postgresql/9.4/extension/postgis.control
+        echo "Env: "
+        env
+
+    - rails-database-yml
+
+    # A step that describes the running environment
+    - script:
+      name: echo ruby information
+      code: |
+        echo "ruby version $(ruby --version) running"
+        echo "from location $(which ruby)"
+        echo "gem list: $(gem list)"
+
+    # A step that loads the database schema in order to run the tests
+    - script:
+      name: Set up db
+      code: |
+        export PGHOST=$POSTGRES_PORT_5432_TCP_ADDR
+        export PGPORT=$POSTGRES_PORT_5432_TCP_PORT
+        export PGUSER=docker
+        export PGPASSWORD=postgis
+        echo "Creating application database ..."
+        psql -c "CREATE DATABASE pgtest WITH TEMPLATE = template0 ENCODING = 'UTF8';"
+        psql -d pgtest -f ./schema.sql
+
     - npm-install
 
-    # A custom script step, name value is used in the UI
-    # and the code value contains the command that get executed
     - script:
         name: echo nodejs information
         code: |
