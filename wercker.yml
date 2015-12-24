@@ -2,9 +2,8 @@ box: node
 # You can also use services such as databases. Read more on our dev center:
 # http://devcenter.wercker.com/docs/services/index.html
 services:
-  - id: helmi03/docker-postgis
-    cmd: su postgres sh -c "sleep 5 && /usr/lib/postgresql/9.3/bin/createdb pgtest"
-    
+  - neowaylabs/postgis
+  
 build:
   steps:
     - install-packages:
