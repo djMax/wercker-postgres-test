@@ -16,7 +16,7 @@ build:
           export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
           export PGUSER=docker
           export PGPASSWORD=docker
-          sudo -E createdb -E UTF8 pgtest
+          sudo -e createdb -E UTF8 pgtest
           psql -d pgtest -f ./schema.sql
 
     # A step that executes `npm install` command
