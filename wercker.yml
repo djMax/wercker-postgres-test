@@ -2,8 +2,7 @@ box: node
 # You can also use services such as databases. Read more on our dev center:
 # http://devcenter.wercker.com/docs/services/index.html
 services:
-  - id: helmi03/docker-postgis
-    cmd: sleep 10 && createdb pgtest
+  - id: djMax/docker-postgis
 
 build:
   steps:
