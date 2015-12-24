@@ -8,19 +8,6 @@ build:
   steps:
 build:
   steps:
-    # Downgrade Rubygems (see https://github.com/wercker/support/issues/161#issuecomment-155731186)
-    - script:
-      name: downgrade GemFile
-      code: gem update --system 2.4.8
-
-    # A step that executes `bundle install` command
-    # All the options of Bundler can be set only via environment variables.
-    # You have to edit the project on wercker.com and set the variables.
-    # To see the list of possible options:
-    # https://github.com/wercker/step-bundle-install/blob/master/run.sh
-    - bundle-install
-
-    # A step that installs the required packages
     - install-packages:
       packages: postgresql-9.4-postgis-scripts
 
