@@ -28,16 +28,6 @@ build:
         echo "Env: "
         env
 
-    - rails-database-yml
-
-    # A step that describes the running environment
-    - script:
-      name: echo ruby information
-      code: |
-        echo "ruby version $(ruby --version) running"
-        echo "from location $(which ruby)"
-        echo "gem list: $(gem list)"
-
     # A step that loads the database schema in order to run the tests
     - script:
       name: Set up db
