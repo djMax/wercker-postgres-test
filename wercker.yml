@@ -3,7 +3,7 @@ box: node
 # http://devcenter.wercker.com/docs/services/index.html
 services:
   - id: helmi03/docker-postgis
-    cmd: createdb pgtest
+    cmd: sleep 10 && createdb pgtest
 
 build:
   steps:
