@@ -3,6 +3,7 @@ box: node
 # http://devcenter.wercker.com/docs/services/index.html
 services:
   - id: helmi03/docker-postgis
+    cmd: createdb pgtest
 
 build:
   steps:
@@ -16,7 +17,6 @@ build:
           export PGHOST=$DOCKER_POSTGIS_PORT_5432_TCP_ADDR
           export PGUSER=docker
           export PGPASSWORD=docker
-          sudo createdb -E UTF8 pgtest
           psql -d pgtest -f ./schema.sql
 
     # A step that executes `npm install` command
